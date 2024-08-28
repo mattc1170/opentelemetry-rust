@@ -270,6 +270,7 @@ impl<RT: Runtime> PeriodicReaderWorker<RT> {
     async fn process_message(&mut self, message: Message) -> bool {
         match message {
             Message::Export => {
+                println!("MATT -- Message::Export");
                 info!("MATT -- Message::Export");
                 if let Err(err) = self.collect_and_export().await {
                     global::handle_error(err)
