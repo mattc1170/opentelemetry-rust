@@ -33,6 +33,8 @@ use super::{
     Pipeline,
 };
 
+use tracing::info;
+
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 const DEFAULT_INTERVAL: Duration = Duration::from_secs(60);
 
@@ -268,6 +270,7 @@ impl<RT: Runtime> PeriodicReaderWorker<RT> {
     async fn process_message(&mut self, message: Message) -> bool {
         match message {
             Message::Export => {
+                info!("MATT -- Message::Export");
                 if let Err(err) = self.collect_and_export().await {
                     global::handle_error(err)
                 }
@@ -279,6 +282,7 @@ impl<RT: Runtime> PeriodicReaderWorker<RT> {
                 }
             }
             Message::Shutdown(ch) => {
+                info!("MATT -- Message::Shutdown");
                 let res = self.collect_and_export().await;
                 let _ = self.reader.exporter.shutdown();
                 if ch.send(res).is_err() {
