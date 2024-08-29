@@ -43,6 +43,9 @@ serde = { workspace = true, features = ["derive"], optional = true }
 thiserror = { workspace = true }
 serde_json = { workspace = true, optional = true }
 
+tracing = "0.1"
+
+
 [dev-dependencies]
 tokio-stream = { workspace = true, features = ["net"] }
 # need tokio runtime to run smoke tests.

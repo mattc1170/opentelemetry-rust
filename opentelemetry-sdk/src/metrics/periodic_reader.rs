@@ -270,13 +270,13 @@ impl<RT: Runtime> PeriodicReaderWorker<RT> {
     async fn process_message(&mut self, message: Message) -> bool {
         match message {
             Message::Export => {
-                println!("MATT -- Message::Export");
                 info!("MATT -- Message::Export");
                 if let Err(err) = self.collect_and_export().await {
                     global::handle_error(err)
                 }
             }
             Message::Flush(ch) => {
+                info!("MATT -- Message::Flush");
                 let res = self.collect_and_export().await;
                 if ch.send(res).is_err() {
                     global::handle_error(MetricsError::Other("flush channel closed".into()))
@@ -297,6 +297,7 @@ impl<RT: Runtime> PeriodicReaderWorker<RT> {
     }
 
     async fn run(mut self, mut messages: impl Unpin + FusedStream<Item = Message>) {
+        info!("MATT -- worker run");
         while let Some(message) = messages.next().await {
             if !self.process_message(message).await {
                 break;

@@ -26,6 +26,8 @@ use opentelemetry_sdk::{
 use std::fmt::{Debug, Formatter};
 use std::time;
 
+use tracing::info;
+
 #[cfg(feature = "http-proto")]
 use crate::exporter::http::HttpExporterBuilder;
 
@@ -240,6 +242,8 @@ where
         }
 
         let provider = provider.build();
+
+        info!("MATT -- build provider: {:?}", provider);
 
         global::set_meter_provider(provider.clone());
 
