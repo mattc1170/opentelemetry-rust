@@ -9,7 +9,6 @@
 use futures_util::{future::BoxFuture, stream::Stream};
 use std::{fmt::Debug, future::Future, time::Duration};
 use thiserror::Error;
-
 /// A runtime is an abstraction of an async runtime like [Tokio] or [async-std]. It allows
 /// OpenTelemetry to work with any current and hopefully future runtime implementation.
 ///
@@ -56,6 +55,7 @@ impl Runtime for Tokio {
     type Delay = ::std::pin::Pin<Box<tokio::time::Sleep>>;
 
     fn interval(&self, duration: Duration) -> Self::Interval {
+        tracing::info!("MATT -- rt-tokio interval {:?}", duration);
         crate::util::tokio_interval_stream(duration)
     }
 
@@ -66,6 +66,7 @@ impl Runtime for Tokio {
     }
 
     fn delay(&self, duration: Duration) -> Self::Delay {
+        tracing::info!("MATT -- rt-tokio delay {:?}", duration);
         Box::pin(tokio::time::sleep(duration))
     }
 }
@@ -83,6 +84,7 @@ impl Runtime for TokioCurrentThread {
     type Delay = ::std::pin::Pin<Box<tokio::time::Sleep>>;
 
     fn interval(&self, duration: Duration) -> Self::Interval {
+        tracing::info!("MATT -- rt-tokio-current-thread interval {:?}", duration);
         crate::util::tokio_interval_stream(duration)
     }
 
@@ -103,6 +105,7 @@ impl Runtime for TokioCurrentThread {
     }
 
     fn delay(&self, duration: Duration) -> Self::Delay {
+        tracing::info!("MATT -- rt-tokio-current-thread delay {:?}", duration);
         Box::pin(tokio::time::sleep(duration))
     }
 }
@@ -120,6 +123,7 @@ impl Runtime for AsyncStd {
     type Delay = BoxFuture<'static, ()>;
 
     fn interval(&self, duration: Duration) -> Self::Interval {
+        tracing::info!("MATT -- rt-sync-std interval {:?}", duration);
         async_std::stream::interval(duration)
     }
 
@@ -129,6 +133,7 @@ impl Runtime for AsyncStd {
     }
 
     fn delay(&self, duration: Duration) -> Self::Delay {
+        tracing::info!("MATT -- rt-sync-std delay {:?}", duration);
         Box::pin(async_std::task::sleep(duration))
     }
 }

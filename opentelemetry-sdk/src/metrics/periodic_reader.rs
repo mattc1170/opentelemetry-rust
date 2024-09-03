@@ -131,6 +131,7 @@ where
         let (message_sender, message_receiver) = mpsc::channel(256);
 
         let worker = move |reader: &PeriodicReader| {
+            info!("MATT -- setting up ticker with interval {:?}", self.interval);
             let ticker = self
                 .runtime
                 .interval(self.interval)
@@ -154,6 +155,7 @@ where
             ));
         };
 
+        info!("MATT -- return PeriodicReader with {} producers", self.producers.len());
         PeriodicReader {
             exporter: Arc::new(self.exporter),
             inner: Arc::new(Mutex::new(PeriodicReaderInner {
@@ -297,12 +299,12 @@ impl<RT: Runtime> PeriodicReaderWorker<RT> {
     }
 
     async fn run(mut self, mut messages: impl Unpin + FusedStream<Item = Message>) {
-        info!("MATT -- worker run");
         while let Some(message) = messages.next().await {
             if !self.process_message(message).await {
                 break;
             }
         }
+        info!("MATT -- worker run exit");
     }
 }
 

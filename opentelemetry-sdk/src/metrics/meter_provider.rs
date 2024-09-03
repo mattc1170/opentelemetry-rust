@@ -18,6 +18,8 @@ use crate::{instrumentation::Scope, Resource};
 
 use super::{meter::SdkMeter, pipeline::Pipelines, reader::MetricReader, view::View};
 
+use tracing::info;
+
 /// Handles the creation and coordination of [Meter]s.
 ///
 /// All `Meter`s created by a `MeterProvider` will be associated with the same
@@ -115,6 +117,7 @@ impl SdkMeterProviderInner {
     }
 
     fn shutdown(&self) -> Result<()> {
+        info!("MATT -- provider shutdown");
         if self
             .is_shutdown
             .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
@@ -131,6 +134,8 @@ impl SdkMeterProviderInner {
 
 impl Drop for SdkMeterProviderInner {
     fn drop(&mut self) {
+        info!("MATT -- provider drop");
+
         if let Err(err) = self.shutdown() {
             global::handle_error(err);
         }
